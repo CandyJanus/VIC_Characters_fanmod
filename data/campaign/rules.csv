@@ -1,1 +1,3 @@
 id,trigger,conditions,script,text,options,notes
+,,,,,,
+vicExpositionCharacterStart,PickGreeting,"$id == ""vic_exposition_character"" score:1000","vicFM_charDialog_rulecmd ""vic_exposition_character""","""Greeting text.""",,

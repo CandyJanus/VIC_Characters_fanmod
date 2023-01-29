@@ -1,18 +1,14 @@
 {
-    "id": "yourName_uniqueid",
-    "name": "starsector-gradle-template",
-    "author": "Your Name",
+    "id": "zvicFM",
+    "name": "victest",
+    "author": "Shinkai Benz",
     "utility": "false",
     "version": { "major":"1", "minor": "0", "patch": "0" },
-    "description": "Mod description.",
+    "description": "reminder that mod load order is in alphabetical order.",
     "gameVersion": "0.95.1a-RC6",
-    "jars":["jars/starsector-gradle-template.jar"],
-    "modPlugin":"com.example.ExampleModPlugin",
+    "jars":["jars/VIC_Characters_fanmod.jar"],
+    "modPlugin":"data.scripts.vicFM_modPlugin",
     "dependencies": [
-        {
-            "id": "lw_lazylib",
-            "name": "LazyLib",
-            # "version": "2.6" # If a specific version or higher is required, include this line
-        }
-    ]
+        {"id": "vic", "name": "VIC"}
+        ]
 }

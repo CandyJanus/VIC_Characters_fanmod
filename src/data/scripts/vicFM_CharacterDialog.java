@@ -3,20 +3,23 @@ package data.scripts;
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.*;
 import com.fs.starfarer.api.campaign.rules.MemoryAPI;
+import com.fs.starfarer.api.characters.PersonAPI;
 import com.fs.starfarer.api.combat.EngagementResultAPI;
+import com.fs.starfarer.api.impl.campaign.rulecmd.FireAll;
 
 import java.awt.*;
 import java.util.Map;
 
-import static data.scripts.vicFM_CharacterDialog.OptionID_variable_name.*;
+import static data.scripts.vicFM_CharacterDialog.ExampleOptions.*;
 
 public class vicFM_CharacterDialog implements InteractionDialogPlugin {
-    public static enum OptionID_variable_name {
+    public static enum ExampleOptions{
         EXAMPLE_BEGINNING_OPTION,
-        EXAMPLE_OPTION1,
-        EXAMPLE_OPTION2,
-        EXAMPLE_OPTION3,
-        EXAMPLE_EXIT_OPTION,
+        test_dialog1,
+        test_dialog1_1,
+        test_dialog1_2,
+        test_dialog2,
+        EXAMPLE_END_OPTION,
     }
 
     protected InteractionDialogAPI dialog;
@@ -25,6 +28,7 @@ public class vicFM_CharacterDialog implements InteractionDialogPlugin {
     protected VisualPanelAPI visual;
 
     protected CampaignFleetAPI playerFleet;
+    protected PersonAPI person;
 
     public void init(InteractionDialogAPI dialog) {
         this.dialog = dialog;
@@ -33,6 +37,8 @@ public class vicFM_CharacterDialog implements InteractionDialogPlugin {
         visual = dialog.getVisualPanel();
 
         playerFleet = Global.getSector().getPlayerFleet();
+
+        person=Global.getSector().getFaction("vic").createRandomPerson();
 
         optionSelected(null, EXAMPLE_BEGINNING_OPTION);
     }
@@ -48,7 +54,7 @@ public class vicFM_CharacterDialog implements InteractionDialogPlugin {
     public void optionSelected(String text, Object optionData) {
         if (optionData == null) return;
 
-        OptionID_variable_name option = (OptionID_variable_name) optionData;
+        ExampleOptions option = (ExampleOptions) optionData;
 
         if (text != null) {
             textPanel.addParagraph(text, Global.getSettings().getColor("buttonText"));
@@ -58,27 +64,44 @@ public class vicFM_CharacterDialog implements InteractionDialogPlugin {
 
         switch (option) {
             case EXAMPLE_BEGINNING_OPTION:
-                textPanel.addParagraph("Example paragraph text " +
-                        "\"example text that appears between quotation marks.\"");
-
+                visual.showPersonInfo(person, true);
+                options.addOption("Option 1.", test_dialog1, null);
+                options.addOption("Option 2.", test_dialog2, null);
+                break;
+            case test_dialog1:
                 options.clearOptions();
-                options.addOption("\"Example option text 1.\"", EXAMPLE_OPTION1, null);
-                options.addOption("\"Example option text 2.\"", EXAMPLE_OPTION2, "This one has a tooltip.");
-                options.addOption("\"Example option text 3.\"", EXAMPLE_OPTION3, vic,"This one has a tooltip.");
+                textPanel.addParagraph("I believe we live in a society.");
+                options.addOption("Option 1_1.", test_dialog1_1, null);
+                options.addOption("Option 1_2.", test_dialog1_2, null);
+                break;
+            case test_dialog1_1:
+                options.clearOptions();
+                textPanel.addParagraph("Option 1_1 text.");
+                options.addOption("\"Bye\"", EXAMPLE_END_OPTION, null);
+                break;
 
+            case test_dialog1_2:
+                options.clearOptions();
+                textPanel.addParagraph("Option 1_2 text.");
+                options.addOption("\"Bye\"", EXAMPLE_END_OPTION, "test tooltip for 1_2");
                 break;
-            case EXAMPLE_OPTION1:
-                textPanel.addParagraph("The other options have not been cleared here.");
+
+            case test_dialog2:
+                options.clearOptions();
+                textPanel.addParagraph("Option 2 text.");
+                options.addOption("\"Bye\"", EXAMPLE_END_OPTION, vic,"test tooltip for 1_2");
                 break;
-            case EXAMPLE_OPTION2:
-                dialog.dismiss();
-                break;
-            case EXAMPLE_OPTION3:
-                dialog.dismiss();
-                break;
-            case EXAMPLE_EXIT_OPTION:
-                //Global.getSector().setPaused(false);
-                dialog.dismiss();
+
+            case EXAMPLE_END_OPTION:
+                if(Global.getSector().getPersistentData().get("seven_originaldialog")!=null) {
+                    InteractionDialogPlugin original = (InteractionDialogPlugin) Global.getSector().getPersistentData().get("seven_originaldialog");
+                    dialog.setPlugin(original);
+                    options.clearOptions();
+                    FireAll.fire(null, dialog, original.getMemoryMap(), "PopulateOptions");
+                    Global.getSector().getPersistentData().remove("seven_originaldialog");
+                }else{
+                    dialog.dismiss();
+                }
                 break;
         }
     }
@@ -97,6 +120,6 @@ public class vicFM_CharacterDialog implements InteractionDialogPlugin {
     public Object getContext() {
         return null;
     }
-}
+
 
 }
